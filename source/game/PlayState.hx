@@ -945,7 +945,7 @@ class PlayState extends MusicBeatState
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, typelol, null, strum.arrows[daNoteData], noteStyle, false);
 				swagNote.sustainLength = songNotes[2];
-				swagNote.gfNote = (section.gfSection && (songNotes[6]));
+				swagNote.gfNote = (section.gfSection && (songNotes[1]<4));
 				swagNote.altNote = songNotes[3];
 				swagNote.scrollFactor.set(0, 0);
 
