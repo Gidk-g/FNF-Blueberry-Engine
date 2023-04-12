@@ -81,7 +81,7 @@ class Note extends FlxSprite
 
 	public var noteJson:NoteJson;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?specialType:String = '', ?sustainNote:Bool = false, ?tracker:StrumArrow, ?style:String = '', ?inCharter:Bool = true)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?specialType:String, ?sustainNote:Bool = false, ?tracker:StrumArrow, ?style:String = '', ?inCharter:Bool = true)
 	{
 		super();
 
