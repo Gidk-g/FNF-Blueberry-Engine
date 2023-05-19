@@ -34,14 +34,16 @@ import sys.io.File;
 
 using StringTools;
 
+typedef JSONReplacer = (key:Dynamic, value:Dynamic) -> Dynamic;
+
 class Hscript
 {
 	public var interp = new Interp();
 	public var parser = new Parser();
+
 	public var script:hscript.Expr;
 
-	public function new()
-	{
+	public function new(){
 		parser.allowTypes = true;
 		parser.allowJSON = true;
 		parser.allowMetadata = true;
@@ -72,7 +74,6 @@ class Hscript
 		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
 		interp.variables.set("Paths", Paths);
 		interp.variables.set("Path", Path);
-		interp.variables.set("Json", Json);
 
 		interp.variables.set("FlxAngle", FlxAngle);
 
@@ -98,13 +99,11 @@ class Hscript
 		interp.variables.set("VideoSprite", VideoSprite);
 		interp.variables.set("VideoHandler", VideoHandler);
 
-		interp.variables.set("getModID", function()
-		{
+		interp.variables.set("getModID", function(){
 			return ModLib.curMod.id;
 		});
 
-		interp.variables.set("createThread", function(func:Void -> Void)
-		{
+		interp.variables.set("createThread", function(func:Void -> Void){
 			#if (target.threaded)
 			Thread.create(() -> {
 				func();
@@ -118,22 +117,28 @@ class Hscript
 			Assets.cache.setBitmapData(ModAssets.getPath(path, null, modID, null, false), BitmapData.fromFile(ModAssets.getPath(path, null, modID, null, false)));
 		});
 
+        interp.variables.set("Json", {
+			"parse": function(value:String){
+				return Json.parse(value);
+			},
+			"stringify": function(value:Dynamic, ?space:String, ?replacer:JSONReplacer){
+				return Json.stringify(value, replacer, space);
+			}
+        });
+
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
 	}
 
-	public function call(funcName:String, ?args:Array<Dynamic>):Dynamic
-	{
+	public function call(funcName:String, ?args:Array<Dynamic>):Dynamic{
 		if (args == null)
 			args = [];
 
-		try
-		{
+		try{
 			var func:Dynamic = interp.variables.get(funcName);
 			if (func != null && Reflect.isFunction(func))
 				return Reflect.callMethod(null, func, args);
 		}
-		catch (e)
-		{
+		catch (e){
 			FlxG.log.add(e.details());
 		}
 
@@ -147,8 +152,7 @@ class Hscript
 	 * @param modID Mod ID.
 	 * @param addDir Additional Directory on Fail
 	 */
-	public function loadScript(location:String, scriptName:String, ?modID:String = null, addDir:String = 'shared')
-	{
+	public function loadScript(location:String, scriptName:String, ?modID:String = null, addDir:String = 'shared'){
 		try{
 			script = parser.parseString(ModAssets.getAsset('data/$location/$scriptName.hx', null, modID, addDir));
 			interp.execute(script);
@@ -162,8 +166,7 @@ class Hscript
 	 * Load script from path
 	 * @param path
 	 */
-	public function loadScriptFP(path:String)
-	{
+	public function loadScriptFP(path:String){
 		try{
 			script = parser.parseString(File.getContent(path));
 			interp.execute(script);

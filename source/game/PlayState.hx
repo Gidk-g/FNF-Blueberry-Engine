@@ -191,31 +191,26 @@ class PlayState extends MusicBeatState
 	function setScriptVar(?onlyUpdate:Bool = false, script:Hscript){
 		if (!onlyUpdate){
 			// Functions
-			script.interp.variables.set("add", function(value:FlxObject)
-			{
+			script.interp.variables.set("add", function(value:FlxObject){
 				add(value);
 			});
 
-			script.interp.variables.set("setDefaultZoom", function(value:Dynamic, ?immediateZoom:Bool = false)
-			{
+			script.interp.variables.set("setDefaultZoom", function(value:Dynamic, ?immediateZoom:Bool = false){
 				defaultCamZoom = value;
 
 				if (immediateZoom)
 					FlxG.camera.zoom = value;
 			});
 
-			script.interp.variables.set("setCameraSpeed", function(value:Dynamic)
-			{
+			script.interp.variables.set("setCameraSpeed", function(value:Dynamic){
 				cameraSpeed = value;
 			});
 
-			script.interp.variables.set("setGF", function(value:Dynamic)
-			{
+			script.interp.variables.set("setGF", function(value:Dynamic){
 				gfVersion = value;
 			});
 
-			script.interp.variables.set("curGF", function()
-			{
+			script.interp.variables.set("curGF", function(){
 				return gfVersion;
 			});
 
@@ -431,6 +426,7 @@ class PlayState extends MusicBeatState
 		}
 
 		setScriptVar(false, script);
+		setScriptVar(false, Note.scriptNote);
 
 		script.call("create"); // A lot of stuff here will not run or work properly.
 
@@ -657,6 +653,8 @@ class PlayState extends MusicBeatState
 		super.create();
 
 		setScriptVar(true, script);
+		setScriptVar(true, Note.scriptNote);
+
 		script.call("createPost");
 
 		#if discord_rpc
@@ -974,7 +972,6 @@ class PlayState extends MusicBeatState
 					sustainNote.sangByCharID = oldNote.sangByCharID;
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
-
 					sustainNote.mustPress = gottaHitNote;
 				}
 
@@ -1323,8 +1320,10 @@ class PlayState extends MusicBeatState
 		}
 
 		setScriptVar(true, script);
+		setScriptVar(true, Note.scriptNote);
 
 		script.call("update", [elapsed]);
+		Note.scriptNote.call("update", [elapsed]);
 
 		if(!inCutscene){
 			var lerpVal:Float = CoolUtil.boundTo(elapsed * 2.4 * cameraSpeed, 0, 1);
@@ -1640,6 +1639,9 @@ class PlayState extends MusicBeatState
 						cpuStrums.updateOffsets();
 					}
 
+					script.call("dadNoteHit");
+					Note.scriptNote.call("dadNoteHit");
+
 					curDAD.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -1668,6 +1670,7 @@ class PlayState extends MusicBeatState
 				else */
 				if (daNote.tooLate && !daNote.noteFuckingDying){
 					script.call("noteTooLate", [daNote]);
+					Note.scriptNote.call("noteTooLate", [daNote]);
 
 					if (daNote.isSustainNote)
 						health -= 0.05;
@@ -1737,6 +1740,7 @@ class PlayState extends MusicBeatState
 		}
 
 		script.call("updatePost", [elapsed]);
+		Note.scriptNote.call("updatePost", [elapsed]);
 	}
 
 	function killCombo():Void
@@ -1945,6 +1949,7 @@ class PlayState extends MusicBeatState
 			},
 			startDelay: Conductor.crochet * 0.001
 		});
+
 		if (combo >= 10 || combo == 0)
 			displayCombo();
 	}
@@ -2229,6 +2234,7 @@ class PlayState extends MusicBeatState
 	function noteMiss(direction:Int = 1):Void
 	{
 		script.call("noteMiss", [direction]);
+		Note.scriptNote.call("noteMiss", [direction]);
 
 		health -= 0.1;
 		++songMisses;
@@ -2295,6 +2301,7 @@ class PlayState extends MusicBeatState
 		if (!note.wasGoodHit)
 		{
 			script.call("goodNoteHit", [note]);
+			Note.scriptNote.call("goodNoteHit", [note]);
 
 			if (!note.isSustainNote)
 			{

@@ -1,6 +1,7 @@
 package;
 
 import haxe.Json;
+import engine.modutil.Hscript;
 import engine.modding.SpunModLib.Mod;
 import engine.modding.SpunModLib.ModLib;
 import engine.modding.SpunModLib.ModAssets;
@@ -81,6 +82,8 @@ class Note extends FlxSprite
 
 	public var noteJson:NoteJson;
 
+	public static var scriptNote:Hscript = new Hscript();
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?specialType:String, ?sustainNote:Bool = false, ?tracker:StrumArrow, ?style:String = '', ?inCharter:Bool = true)
 	{
 		super();
@@ -116,11 +119,19 @@ class Note extends FlxSprite
 		    if (ModAssets.assetExists('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared')){
 			    noteJson = Json.parse(ModAssets.getAsset('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared'));
 		    }
+		    if (ModAssets.assetExists('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared')){
+			    scriptNote.loadScriptFP(ModAssets.getAsset('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared'));
+		    }
 		}
 
 		strumTrack = tracker;
 
 		updateStyle(style);
+
+		scriptNote.interp.variables.set("note", this);
+		scriptNote.interp.variables.set("specialType", specialType);
+
+        scriptNote.call("setupNote");
 	}
 
 	public function updateColors():Void
@@ -344,6 +355,8 @@ class Note extends FlxSprite
 			if (strumTime <= Conductor.songPosition)
 				wasGoodHit = true;
 		}
+
+        scriptNote.call("noteUpdate", [elapsed]);
 	}
 
 	/**
