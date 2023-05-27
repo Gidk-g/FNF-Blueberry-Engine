@@ -116,12 +116,12 @@ class Note extends FlxSprite
 		}
 
 		if (specialType != null){
-		    if (ModAssets.assetExists('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared')){
-			    noteJson = Json.parse(ModAssets.getAsset('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared'));
-		    }
-		    if (ModAssets.assetExists('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared')){
-			    scriptNote.loadScriptFP(ModAssets.getAsset('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared'));
-		    }
+		    // if (ModAssets.assetExists('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared')){
+			    // noteJson = Json.parse(ModAssets.getAsset('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared'));
+		    // }
+		    // if (ModAssets.assetExists('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared')){
+			    // scriptNote.loadScriptFP(ModAssets.getAsset('data/notes/' + specialType + '.json', null, ModLib.getModID(ModLib.curMod), 'shared'));
+		    // }
 		}
 
 		strumTrack = tracker;
